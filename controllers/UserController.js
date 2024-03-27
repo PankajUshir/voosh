@@ -4,8 +4,7 @@ const UserModel = require('../models/UserModel');
 const UserController = {
   getAllUsers: async (req, res, next) => {
     try {
-      const { role } = req.body;
-      console.log(role);
+      const role = req.params.role;
       let allUsers;
 
       if (role === 'USER') {

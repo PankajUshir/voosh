@@ -23,7 +23,7 @@ const authController = {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      const token = jwt.sign({ userId: user.id }, config.auth.secretKey, {
+      const token = jwt.sign({ user: user }, config.auth.secretKey, {
         expiresIn: '24h',
       });
 
@@ -33,8 +33,6 @@ const authController = {
       res.status(500).json({ message: 'Internal Server Error' });
     }
   },
-
-  loginUserGithub: async (req, res, next) => {},
 
   signUp: async (req, res, next) => {
     try {

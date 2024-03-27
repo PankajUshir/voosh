@@ -6,6 +6,8 @@ const models = require('./models/UserModel');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const router = require('./routes');
+const passport = require('./middleware/passport');
+const jwt = require('jsonwebtoken');
 
 app.use(express.json());
 
@@ -29,6 +31,31 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api', router);
+app.use(
+  require('express-session')({
+    secret: 'keyboard cat',
+    resave: true,
+    saveUninitialized: true,
+  }),
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/auth/github', passport.authenticate('github'));
+
+app.get(
+  '/oauth-callback',
+  passport.authenticate('github', { failureRedirect: '/api' }),
+  function (req, res) {
+    const user = req.user;
+
+    const token = jwt.sign({ user: user }, config.auth.secretKey, {
+      expiresIn: '24h',
+    });
+
+    res.status(200).json({ token });
+  },
+);
 
 app.listen(config.port, () => {
   console.log(`Server is listening at http://localhost:${config.port}`);

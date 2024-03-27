@@ -48,7 +48,7 @@ const User = sequelize.define(
     isPublic: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: true, // Default value is true
+      defaultValue: true,
     },
   },
   { tableName: 'users', timestamps: false },
