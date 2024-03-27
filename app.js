@@ -2,13 +2,33 @@ const express = require('express');
 const app = express();
 const config = require('./config/config');
 const sequelize = require('./config/sequelize');
-// const models = require('./models');
-// const router = require('./routes');
-// const cors = require('cors');
+const models = require('./models/UserModel');
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+const router = require('./routes');
 
-// app.use(cors());
 app.use(express.json());
-// app.use('/api', router);
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'NodeJS API Documentation',
+      version: '1.0.0',
+      description: 'Documentation for your API',
+    },
+    servers: [
+      {
+        url: 'http://localhost:4000',
+      },
+    ],
+  },
+  apis: ['./config/swagger-config.js'],
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api', router);
 
 app.listen(config.port, () => {
   console.log(`Server is listening at http://localhost:${config.port}`);
